@@ -170,7 +170,7 @@ public class MapActivity extends AppCompatActivity implements AMap.OnCameraChang
         alertDialog = builder
                 .setTitle("餐馆详情")
                 .setMessage(marker.getTitle())
-                .setPositiveButton("查看详情",this)
+                .setPositiveButton("我要点菜",this)
                 .setNegativeButton("取消",this)
                 .setNeutralButton("中间",this)
                 .show();

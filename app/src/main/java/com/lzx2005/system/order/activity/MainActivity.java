@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.lzx2005.system.order.R;
+import com.lzx2005.system.order.http.task.GetTask;
 import com.lzx2005.system.order.http.task.GetUserInfoTask;
 import com.lzx2005.system.order.http.task.LoginTask;
 
@@ -157,11 +158,27 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case 2:
+                String token1 = loginInfo.getString("token", "");
                 //todo 地图上选择到了餐厅，获取餐厅菜单
+                String rid = data.getStringExtra("restaurantId");
+                Log.i("lzx","RestId是："+rid);
+                String host = getResources().getString(R.string.server_host);
+                String url = host + "/rest/dish/getByRestId?token="+token1+"&restId="+rid;
+
+                GetTask getTask = new GetTask(url, showMenuHandler);
+                new Thread(getTask).start();
                 break;
             default:
         }
     }
+    Handler showMenuHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle data = msg.getData();
+            String val = data.getString("value");
+            Log.i("lzx", val);
+        }
+    };
 
     Handler handler = new Handler() {
         @Override
