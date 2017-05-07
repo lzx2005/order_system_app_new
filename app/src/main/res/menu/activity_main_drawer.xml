@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_near_rest"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="附近的餐厅" />
+        <item
+            android:id="@+id/nav_my_order"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="我的订单" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_menu"
+                android:icon="@drawable/ic_menu_share"
+                android:title="菜单" />
+            <item
+                android:id="@+id/nav_exit"
+                android:icon="@drawable/ic_exit"
+                android:title="退出登录" />
+        </menu>
+    </item>
+
+</menu>
