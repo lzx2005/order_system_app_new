@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-
-android:id="@+id/menuListItem"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="match_parent"
+    android:padding="3dp">
+
+    <TextView
+        android:id="@+id/dish_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:padding="10dp"
+        android:gravity="left"
+        android:foregroundGravity="center"
+        android:text="asdawdawxawxa"/>
+
+    <TextView
+        android:id="@+id/dish_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:gravity="right"
+        android:foregroundGravity="center"
+        android:text="sadawdwa"
+        android:textColor="@color/yellow"/>
+
+    <ImageView
+        android:id="@+id/dish_minus_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_302d"/>
+    <EditText
+        android:id="@+id/dish_order_sum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="0"/>
+     <ImageView
+         android:id="@+id/dish_add_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_301add"/>
+
+</LinearLayout>
