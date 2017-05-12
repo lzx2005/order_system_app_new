@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MapActivity" />
-        <activity android:name=".activity.MenuActivity"></activity>
+        <activity android:name=".activity.MenuActivity"/>
     </application>
 
 </manifest>
