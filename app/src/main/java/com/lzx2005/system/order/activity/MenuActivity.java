@@ -8,28 +8,65 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lzx2005.system.order.R;
+import com.lzx2005.system.order.adapter.MenuAdapter;
 import com.lzx2005.system.order.http.task.GetTask;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnItemViewClickCallback {
 
     SharedPreferences loginInfo;
-
+    List<HashMap<String,Object>> list;
+    MenuAdapter menuAdapter;
+    TextView totalPriceView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
         setTitle("点菜");
         loginInfo = getSharedPreferences("loginInfo", 0);
+        list = new ArrayList<>();
+        totalPriceView = (TextView) findViewById(R.id.total_price);
+        menuAdapter = new MenuAdapter(this, (viewHolder, clickView, position) -> {
+            HashMap<String, Object> hashMap = list.get(position);
+            int count = (int) hashMap.get("count");
+            switch (clickView.getId()){
+                case R.id.dish_minus_btn:
+                    Log.i("lzx",viewHolder.dishName.getText().toString()+"减少一个");
+                    if(count>0){
+                        count -= 1;
+                    }
+                    break;
+                case R.id.dish_add_btn:
+                    Log.i("lzx",viewHolder.dishName.getText().toString()+"增加一个");
+                    count += 1;
+                    break;
+            }
+            if(count<0){
+                count=0;
+            }
+            hashMap.put("count",count);
+            viewHolder.sum.setText(count+"");
 
+            //计算总价
+            double totalPrice = 0.0;
+            for(HashMap<String,Object> map : list){
+                int count1 = (int) map.get("count");
+                String priceStr1 = (String) map.get("price");
+                double price1 = Double.parseDouble(priceStr1);
+                totalPrice = totalPrice + (count1*price1);
+            }
+            DecimalFormat df = new DecimalFormat("######0.00");
+            totalPriceView.setText("总价："+df.format(totalPrice)+"元");
+        });
         String token = loginInfo.getString("token", "");
         String restaurantId = this.getIntent().getExtras().getString("restaurantId");
         String host = getResources().getString(R.string.server_host);
@@ -48,27 +85,56 @@ public class MenuActivity extends AppCompatActivity {
             Log.i("lzx", val);
             JSONObject result = JSONObject.parseObject(val);
             JSONObject root = result.getJSONObject("data");
-            List<HashMap<String,Object>> list = new ArrayList<>();
             for(String key : root.keySet()){
                 JSONArray array = root.getJSONArray(key);
                 for(int i=0;i<array.size();i++){
                     JSONObject dish = array.getJSONObject(i);
-
                     HashMap<String,Object> hashMap = new HashMap<>();
                     hashMap.put("name",dish.getString("name"));
                     hashMap.put("price",dish.getString("price"));
+                    hashMap.put("id",dish.getInteger("id"));
+                    hashMap.put("count",0);
                     list.add(hashMap);
                 }
             }
-
-            SimpleAdapter simpleAdapter = new SimpleAdapter(MenuActivity.this,
-                    list,
-                    R.layout.menu_list_item,
-                    new String[]{"name", "price"},
-                    new int[]{R.id.dish_name, R.id.dish_price});
             ListView listView = (ListView) findViewById(R.id.menu_list);
-            listView.setAdapter(simpleAdapter);
+            menuAdapter.setList(list);
+            listView.setAdapter(menuAdapter);
         }
     };
 
+    @Override
+    public void click(MenuAdapter.ViewHolder viewHolder, View clickView, int position) {
+        CharSequence priceStr = viewHolder.dishPrice.getText();
+        HashMap<String, Object> hashMap = list.get(position);
+        int count = (int) hashMap.get("count");
+        switch (clickView.getId()){
+            case R.id.dish_minus_btn:
+                Log.i("lzx",viewHolder.dishName.getText().toString()+"减少一个");
+                if(count>0){
+                    count -= 1;
+                }
+                break;
+            case R.id.dish_add_btn:
+                Log.i("lzx",viewHolder.dishName.getText().toString()+"增加一个");
+                count += 1;
+                break;
+        }
+        if(count<0){
+            count=0;
+        }
+        hashMap.put("count",count);
+        viewHolder.sum.setText(count+"");
+
+        //计算总价
+        double totalPrice = 0.0;
+        for(HashMap<String,Object> map : list){
+            int count1 = (int) map.get("count");
+            String priceStr1 = (String) map.get("price");
+            double price1 = Double.parseDouble(priceStr1);
+            totalPrice = totalPrice + (count1*price1);
+        }
+        DecimalFormat df = new DecimalFormat("######0.00");
+        totalPriceView.setText("总价："+df.format(totalPrice)+"元");
+    }
 }

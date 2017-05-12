@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="3dp">
+    android:padding="3dp"
+    android:focusable="false"
+    android:descendantFocusability="blocksDescendants">
 
     <TextView
         android:id="@+id/dish_name"
@@ -23,25 +25,27 @@
         android:gravity="right"
         android:foregroundGravity="center"
         android:text="sadawdwa"
-        android:textColor="@color/yellow"/>
+        android:textColor="@color/yellow" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/dish_minus_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_302d"/>
+        android:src="@drawable/ic_302d"
+        android:background="@color/white"/>
     <EditText
         android:id="@+id/dish_order_sum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:text="0"/>
-     <ImageView
+     <ImageButton
          android:id="@+id/dish_add_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_301add"/>
+        android:src="@drawable/ic_301add"
+         android:background="@color/white"/>
 
 </LinearLayout>
