@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.lzx2005.system.order"
-        minSdkVersion 15
+        minSdkVersion 22
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -25,6 +25,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    productFlavors {
     }
 }
 

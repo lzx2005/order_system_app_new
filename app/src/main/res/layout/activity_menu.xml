@@ -38,7 +38,7 @@
             android:id="@+id/total_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:padding="10dp"
             android:layout_weight="2"
             android:text="总价：0.00元"
             android:textSize="22dp"
