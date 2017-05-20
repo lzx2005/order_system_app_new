@@ -3,12 +3,15 @@ package com.lzx2005.system.order.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -37,6 +40,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.lzx2005.system.order.R;
+import com.lzx2005.system.order.adapter.RestAdapter;
 import com.lzx2005.system.order.http.task.GetNearRestautantTask;
 import com.lzx2005.system.order.http.task.GetUserInfoTask;
 
@@ -80,6 +84,7 @@ public class MainActivity
 
     List<HashMap<String,Object>> restDataList = new ArrayList<>();
 
+    RestAdapter restAdapter;
 
     private ProgressDialog progressDialog;
     @Override
@@ -87,6 +92,7 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         loginInfo = getSharedPreferences("loginInfo", 0);
         setContentView(R.layout.activity_main);
+        restAdapter=new RestAdapter(this);
         progressDialog = ProgressDialog.show(MainActivity.this, "正在查找附近的餐厅...", "请稍后...", true, false);
         loadView();
         setSupportActionBar(toolbar);
@@ -258,19 +264,24 @@ public class MainActivity
                     hashMap.put("restName",restaurant.getString("restaurantName"));
                     hashMap.put("restDis","距您"+dis);
                     hashMap.put("restaurantId",restaurant.getString("restaurantId"));
-                    restDataList.add(hashMap);
-                    Log.i("lzx",re.toJSONString());
-                    //JSONArray position = restaurant.getJSONArray("position");
-                }
+                    hashMap.put("tag",restaurant.getString("tag"));
+                    hashMap.put("score",restaurant.getFloatValue("score"));
+                    hashMap.put("preferential",restaurant.getJSONObject("preferential"));
+                    hashMap.put("soldPerMonth",restaurant.getInteger("soldPerMonth"));
 
-                SimpleAdapter simpleAdapter = new SimpleAdapter(
-                        MainActivity.this,
-                        restDataList,
-                        R.layout.rest_list_item,
-                        new String[]{"restName","restDis"},
-                        new int[]{R.id.rest_name,R.id.rest_dis}
-                );
-                restList.setAdapter(simpleAdapter);
+                    String avatar = restaurant.getString("avatar");
+                    if(!TextUtils.isEmpty(avatar)){
+                        byte[] decode = Base64.decode(avatar,Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                        hashMap.put("restAvatar",bitmap);
+                    }else{
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+                        hashMap.put("restAvatar",bitmap);
+                    }
+                    restDataList.add(hashMap);
+                }
+                restAdapter.setList(restDataList);
+                restList.setAdapter(restAdapter);
                 restList.setOnItemClickListener(MainActivity.this);
                 progressDialog.dismiss();
             }else{
@@ -327,15 +338,13 @@ public class MainActivity
         double latitude = aMapLocation.getLatitude();
         Log.i("lzx","lng:"+longitude+",lat:"+latitude);
 
-
-
         String token = loginInfo.getString("token", "no");//找到登录信息
         if(token.equals("no")){
             Toast.makeText(this,"暂未登录",Toast.LENGTH_SHORT).show();
             return;
         }
         String host = getResources().getString(R.string.server_host);
-        String url = host + "/rest/restaurant/near?token="+token+"&lng="+longitude+"&lat="+latitude+"&length="+10;
+        String url = host + "/rest/restaurant/near?token="+token+"&lng="+longitude+"&lat="+latitude+"&length="+100;
         GetNearRestautantTask getUserInfoTask = new GetNearRestautantTask(url, showNearRestauranthandler);
         new Thread(getUserInfoTask).start();
     }
