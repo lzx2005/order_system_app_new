@@ -256,8 +256,18 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnIte
             String val = data.getString("value");
             Log.i("lzx", val);
             JSONObject result = JSONObject.parseObject(val);
-            JSONObject root = result.getJSONObject("data");
+            Integer code = result.getInteger("code");
             progressDialog.dismiss();
+            if(code!=0){
+                AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+                alertDialog = builder
+                        .setTitle("创建订单失败")
+                        .setMessage(result.getString("msg"))
+                        .setPositiveButton("好的", (dialog, which) -> {})
+                        .show();
+            }else{
+                //订单创建成功
+            }
         }
     };
 
