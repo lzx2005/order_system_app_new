@@ -34,17 +34,25 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lzx2005.system.order.R;
 import com.lzx2005.system.order.adapter.MenuAdapter;
+import com.lzx2005.system.order.entity.Order;
 import com.lzx2005.system.order.http.task.GetTask;
+import com.lzx2005.system.order.http.task.PostTask;
+import com.lzx2005.system.order.utils.SUID;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnItemViewClickCallback,View.OnClickListener,DialogInterface.OnClickListener {
 
     SharedPreferences loginInfo;
     List<HashMap<String,Object>> list;
+    String restaurantId;
 
     LinearLayout menuHeader;
     ImageView menuAvatar;
@@ -53,9 +61,12 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnIte
     MenuAdapter menuAdapter;
     TextView totalPriceView;
     FloatingActionButton fab;
-    private ProgressDialog progressDialog;
+    ProgressDialog progressDialog;
 
     AlertDialog alertDialog;
+
+    String host;
+    String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +83,9 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnIte
         fab = (FloatingActionButton)findViewById(R.id.fab);
         menuAdapter = new MenuAdapter(this, this);
 
-        String token = loginInfo.getString("token", "");
-        String restaurantId = this.getIntent().getExtras().getString("restaurantId");
-        String host = getResources().getString(R.string.server_host);
+        token = loginInfo.getString("token", "");
+        restaurantId = this.getIntent().getExtras().getString("restaurantId");
+        host = getResources().getString(R.string.server_host);
 
         String restInfoUrl =  host + "/rest/restaurant/info?token="+token+"&restaurantId="+restaurantId;
 
@@ -208,7 +219,28 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnIte
     public void onClick(DialogInterface dialog, int which) {
         switch (which){
             case -1:
+
+                progressDialog = ProgressDialog.show(MenuActivity.this, "操作中...", "订单正在生成，请稍后...", true, false);
+                Order order = new Order();
+                order.setRestaurantId(restaurantId);
+                order.setOrderId(SUID.getUUID());
+                order.setCreateTime(new Date());
+                order.setStatus(0);
+                List<HashMap<String,Object>> dishes = new ArrayList<>();
+                for(HashMap<String,Object> hashMap : list){
+                    int count = (int)hashMap.get("count");
+                    if(count>0){
+                        dishes.add(hashMap);
+                    }
+                }
+                order.setDishes(dishes);
                 Log.i("lzx","下单");
+
+
+                String url = host + "/rest/order/create?token="+token;
+                RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), order.toString());
+                PostTask postTask = new PostTask(url, orderSubmitedHandler, requestBody);
+                new Thread(postTask).start();
                 //todo 生成订单
                 break;
             case -2:
@@ -217,6 +249,17 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnIte
         }
     }
 
+    Handler orderSubmitedHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle data = msg.getData();
+            String val = data.getString("value");
+            Log.i("lzx", val);
+            JSONObject result = JSONObject.parseObject(val);
+            JSONObject root = result.getJSONObject("data");
+            progressDialog.dismiss();
+        }
+    };
 
 
     public Bitmap blurBitmap(Bitmap bitmap){
