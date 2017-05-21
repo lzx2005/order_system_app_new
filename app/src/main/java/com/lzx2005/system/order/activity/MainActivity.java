@@ -93,7 +93,6 @@ public class MainActivity
         loginInfo = getSharedPreferences("loginInfo", 0);
         setContentView(R.layout.activity_main);
         restAdapter=new RestAdapter(this);
-        progressDialog = ProgressDialog.show(MainActivity.this, "正在查找附近的餐厅...", "请稍后...", true, false);
         loadView();
         setSupportActionBar(toolbar);
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -343,6 +342,8 @@ public class MainActivity
             Toast.makeText(this,"暂未登录",Toast.LENGTH_SHORT).show();
             return;
         }
+
+        progressDialog = ProgressDialog.show(MainActivity.this, "正在查找附近的餐厅...", "请稍后...", true, false);
         String host = getResources().getString(R.string.server_host);
         String url = host + "/rest/restaurant/near?token="+token+"&lng="+longitude+"&lat="+latitude+"&length="+100;
         GetNearRestautantTask getUserInfoTask = new GetNearRestautantTask(url, showNearRestauranthandler);
