@@ -9,4 +9,5 @@
     <color name="lightGrey">#efefef</color>
     <color name="grey">#9c9c9c</color>
     <color name="deepGrey">#949494</color>
+    <color name="black">#000</color>
 </resources>
