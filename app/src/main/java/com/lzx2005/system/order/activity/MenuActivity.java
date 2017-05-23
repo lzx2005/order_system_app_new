@@ -268,6 +268,9 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnIte
                         .show();
             }else{
                 //订单创建成功
+                Toast.makeText(MenuActivity.this,"订单创建成功",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MenuActivity.this,OrderActivity.class);
+                startActivity(intent);
             }
         }
     };
