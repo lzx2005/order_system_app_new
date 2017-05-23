@@ -1,6 +1,7 @@
 package com.lzx2005.system.order.activity;
 
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
@@ -31,15 +32,20 @@ public class OrderActivity extends AppCompatActivity {
     //TextView
     TextView orderTotalPrice;
 
+    //提示
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+        progressDialog = ProgressDialog.show(this, "正在加载订单...", "请稍后...", true, false);
         loadView();
         loginInfo = getSharedPreferences("loginInfo", 0);
         String token = loginInfo.getString("token", "no");//找到登录信息
         if (token.equals("no")) {
             //未登录
+            progressDialog.dismiss();
             Toast.makeText(this,"暂未登录",Toast.LENGTH_SHORT).show();
         } else {
             String host = getResources().getString(R.string.server_host);
@@ -49,38 +55,6 @@ public class OrderActivity extends AppCompatActivity {
         }
     }
 
-/*
-*
-*
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="3dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:textColor="@color/grey"
-                android:text="蛋炒饭"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="right"
-                android:textColor="@color/grey"
-                android:text="×1"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="right"
-                android:textColor="@color/black"
-                android:text="¥15"/>
-        </LinearLayout>
-
-* */
 
     Handler handler = new Handler() {
         @Override
@@ -129,7 +103,9 @@ public class OrderActivity extends AppCompatActivity {
 
                 DecimalFormat df = new DecimalFormat("######0.00");
                 orderTotalPrice.setText("¥"+df.format(totalPrice));
+                progressDialog.dismiss();
             }else{
+                progressDialog.dismiss();
                 Toast.makeText(OrderActivity.this,jsonObject.getString("msg"),Toast.LENGTH_LONG).show();
             }
         }

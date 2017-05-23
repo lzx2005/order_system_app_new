@@ -205,7 +205,8 @@ public class MenuActivity extends AppCompatActivity implements MenuAdapter.OnIte
                     stringBuilder.append(hashMap.get("name")+":"+count+"份\n");
                 }
             }
-            stringBuilder.append("总价为："+countTotalPrice()+"元");
+            DecimalFormat df = new DecimalFormat("######0.00");
+            stringBuilder.append("总价为："+df.format(countTotalPrice())+"元");
             alertDialog = builder
                     .setTitle("已点详情")
                     .setMessage(stringBuilder.toString())
