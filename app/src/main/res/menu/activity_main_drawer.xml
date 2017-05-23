@@ -4,23 +4,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_near_rest"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_china_map"
             android:title="附近的餐厅" />
         <item
             android:id="@+id/nav_my_order"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_order_list"
             android:title="我的订单" />
     </group>
 
-    <item android:title="Communicate">
+    <item
+        android:id="@+id/menu_user_item"
+        android:title="用户">
         <menu>
             <item
-                android:id="@+id/nav_menu"
-                android:icon="@drawable/ic_menu_share"
-                android:title="菜单" />
-            <item
                 android:id="@+id/nav_exit"
-                android:icon="@drawable/ic_exit"
+                android:icon="@drawable/ic_exitb"
                 android:title="退出登录" />
         </menu>
     </item>

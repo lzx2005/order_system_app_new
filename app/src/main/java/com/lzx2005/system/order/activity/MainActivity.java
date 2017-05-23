@@ -168,9 +168,7 @@ public class MainActivity
             Intent intent = new Intent(MainActivity.this,MapActivity.class);
             startActivityForResult(intent,2);
         } else if (id == R.id.nav_my_order) {
-
-        } else if (id == R.id.nav_menu) {
-            Intent intent = new Intent(MainActivity.this,MenuActivity.class);
+            Intent intent = new Intent(MainActivity.this,OrderActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_exit) {
             loginInfo.edit().remove("token").apply();
@@ -192,17 +190,39 @@ public class MainActivity
                     Log.i("lzx","未登录，不获取用户信息");
                     //未登录
                 }else{
+
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START,false);
                     Log.i("lzx","登录成功，开始获取用户信息");
                     String host = getResources().getString(R.string.server_host);
                     String url = host + "/user/userInfo?token="+token;
                     GetUserInfoTask getUserInfoTask = new GetUserInfoTask(url, handler);
                     new Thread(getUserInfoTask).start();
+
+
+                    //查找附近的餐厅
+                    AMapLocation lastKnownLocation = mLocationClient.getLastKnownLocation();
+
+                    double longitude = lastKnownLocation.getLongitude();
+                    double latitude = lastKnownLocation.getLatitude();
+                    Log.i("lzx","lng:"+longitude+",lat:"+latitude);
+
+                    if(token.equals("no")){
+                        Toast.makeText(this,"暂未登录",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    progressDialog = ProgressDialog.show(MainActivity.this, "正在查找附近的餐厅...", "请稍后...", true, false);
+                    String url1 = host + "/rest/restaurant/near?token="+token+"&lng="+longitude+"&lat="+latitude+"&length="+100;
+                    GetNearRestautantTask getNearRestautantTask = new GetNearRestautantTask(url1, showNearRestauranthandler);
+                    new Thread(getNearRestautantTask).start();
                 }
                 break;
             case 2:
-                Intent intent = new Intent(MainActivity.this,MenuActivity.class);
-                intent.putExtra("restaurantId",data.getStringExtra("restaurantId"));
-                startActivity(intent);
+                if(data!=null){
+                    Intent intent = new Intent(MainActivity.this,MenuActivity.class);
+                    intent.putExtra("restaurantId",data.getStringExtra("restaurantId"));
+                    startActivity(intent);
+                }
                 break;
             default:
         }
@@ -317,7 +337,7 @@ public class MainActivity
 
         //获取一次定位结果：
         //该方法默认为false。
-        mLocationOption.setOnceLocation(true);
+        mLocationOption.setOnceLocation(false);
 
         //获取最近3s内精度最高的一次定位结果：
         //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果。如果设置其为true，setOnceLocation(boolean b)接口也会被设置为true，反之不会，默认为false。
