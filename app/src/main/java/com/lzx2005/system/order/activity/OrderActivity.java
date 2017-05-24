@@ -25,6 +25,8 @@ import com.lzx2005.system.order.http.task.GetTask;
 import com.lzx2005.system.order.http.task.PostTask;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -41,7 +43,8 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
 
     //TextView
     TextView orderTotalPrice;
-
+    TextView orderId;
+    TextView orderCreateTime;
     //提示
     ProgressDialog progressDialog;
     AlertDialog alertDialog;
@@ -82,6 +85,11 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
                 //成功
                 JSONObject root = jsonObject.getJSONObject("data");
                 JSONArray dishes = root.getJSONArray("dishes");
+                orderId.setText("订单ID："+root.getString("orderId"));
+                Long createTimeLong = root.getLong("createTime");
+                Date date = new Date(createTimeLong);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                orderCreateTime.setText(simpleDateFormat.format(date));
                 double totalPrice = 0;
                 for(int i=0;i<dishes.size();i++){
                     JSONObject dish = dishes.getJSONObject(i);
@@ -155,6 +163,8 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
         orderTotalPrice = (TextView) findViewById(R.id.order_total_price);
         orderPay = (LinearLayout) findViewById(R.id.order_pay);
         payButton = (Button) findViewById(R.id.pay_button);
+        orderId = (TextView) findViewById(R.id.order_id);
+        orderCreateTime = (TextView) findViewById(R.id.order_createTime);
     }
 
     @Override

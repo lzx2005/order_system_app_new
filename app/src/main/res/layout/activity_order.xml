@@ -23,11 +23,18 @@
             android:layout_marginBottom="10dp"/>
 
         <TextView
+            android:id="@+id/order_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="asdawdwad"/>
+            android:text=""/>
 
+        <TextView
+            android:id="@+id/order_createTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text=""/>
     </LinearLayout>
 
     <LinearLayout
@@ -79,13 +86,14 @@
         android:layout_alignParentBottom="true"
         android:gravity="right"
         android:visibility="invisible">
+
         <Button
             android:id="@+id/pay_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:background="@drawable/order_button_style"
             android:text="立即支付"
-            android:background="@drawable/order_button_style" />
+            android:textColor="@color/white" />
     </LinearLayout>
 
 
